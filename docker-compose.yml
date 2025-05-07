@@ -1,16 +1,17 @@
+# docker-compose.yml
 services:
   selenium-hub:
     image: selenium/hub:4.8.0
     container_name: selenium-hub
+    ports:
+      - "4444:4444"
+    networks:
+      - mynetwork
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
       interval: 5s
       timeout: 5s
       retries: 10
-    ports:
-      - "4444:4444"
-    networks:
-      - mynetwork
 
   chrome:
     image: selenium/node-chrome:4.8.0
@@ -24,7 +25,7 @@ services:
       - SE_NODE_MAX_SESSIONS=5
       - SE_NODE_OVERRIDE_MAX_SESSIONS=true
     volumes:
-      - /dev/shm:/dev/shm  # Prevent Chrome crashes due to limited shared memory
+      - /dev/shm:/dev/shm
     networks:
       - mynetwork
 
@@ -40,7 +41,7 @@ services:
       - SE_NODE_MAX_SESSIONS=5
       - SE_NODE_OVERRIDE_MAX_SESSIONS=true
     volumes:
-      - /dev/shm:/dev/shm  # Prevent Firefox crashes due to limited shared memory
+      - /dev/shm:/dev/shm
     networks:
       - mynetwork
 
@@ -48,21 +49,21 @@ services:
     image: mysql:8.0
     container_name: mysql-A
     environment:
-      MYSQL_ROOT_PASSWORD: rootpwd
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: testuser
-      MYSQL_PASSWORD: testpwd
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "testuser", "-ptestpwd"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - MYSQL_ROOT_PASSWORD=rootpwd
+      - MYSQL_DATABASE=testdb
+      - MYSQL_USER=testuser
+      - MYSQL_PASSWORD=testpwd
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
       - mynetwork
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u testuser -ptestpwd"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   test-runner:
     build:
@@ -85,11 +86,11 @@ services:
       - ./robot-reports:/app/robot-reports
     networks:
       - mynetwork
-    command: ["robot", "--outputdir", "robot-reports", "--loglevel", "TRACE", "tests/"]
+    # This command appends to the ENTRYPOINT ["robot"]
+    command: ["--outputdir", "/app/robot-reports", "--loglevel", "TRACE", "tests/"]
 
 networks:
-  mynetwork:
-  {}
+  mynetwork: {}
 
 volumes:
-  mysql-data:
+  mysql-data: {}

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.2.2 (Python 3.9.22 on linux)" generated="2025-05-07T12:41:00.654238" rpa="false" schemaversion="5">
+<suite id="s1" name="Tests" source="/app/tests">
+<suite id="s1-s1" name="Browser Test" source="/app/tests/browser_test.robot">
+<kw name="Open Managed Browser" type="SETUP">
+<msg time="2025-05-07T12:41:00.918265" level="TRACE">Arguments: [  ]</msg>
+<kw name="Get Chrome Driver" owner="DriverManager">
+<msg time="2025-05-07T12:41:00.918840" level="TRACE">Arguments: [  ]</msg>
+<msg time="2025-05-07T12:41:00.920805" level="INFO">====== WebDriver manager ======</msg>
+<msg time="2025-05-07T12:41:00.928759" level="INFO">Get LATEST chromedriver version for google-chrome None</msg>
+<msg time="2025-05-07T12:41:00.930409" level="DEBUG">Starting new HTTPS connection (1): chromedriver.storage.googleapis.com:443</msg>
+<msg time="2025-05-07T12:41:01.547329" level="DEBUG">https://chromedriver.storage.googleapis.com:443 "GET /LATEST_RELEASE HTTP/1.1" 200 13</msg>
+<msg time="2025-05-07T12:41:01.561483" level="INFO">There is no [linux64] chromedriver for browser None in cache</msg>
+<msg time="2025-05-07T12:41:01.561771" level="INFO">About to download new driver from https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip</msg>
+<msg time="2025-05-07T12:41:01.563103" level="DEBUG">Starting new HTTPS connection (1): chromedriver.storage.googleapis.com:443</msg>
+<msg time="2025-05-07T12:41:01.832944" level="DEBUG">https://chromedriver.storage.googleapis.com:443 "GET /114.0.5735.90/chromedriver_linux64.zip HTTP/1.1" 200 7407250</msg>
+<msg time="2025-05-07T12:41:04.453404" level="INFO">Error detecting Chrome version: [Errno 2] No such file or directory: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'</msg>
+<msg time="2025-05-07T12:41:04.457243" level="INFO">[WDM] - Downloading:   0%|          | 0.00/7.06M [00:00&lt;?, ?B/s][WDM] - Downloading:   3%|2         | 192k/7.06M [00:00&lt;00:04, 1.64MB/s][WDM] - Downloading:   8%|7         | 544k/7.06M [00:00&lt;00:02, 2.63MB/s][WDM] - Downloading:  11%|#1        | 824k/7.06M [00:00&lt;00:02, 2.72MB/s][WDM] - Downloading:  15%|#5        | 1.07M/7.06M [00:00&lt;00:02, 2.51MB/s][WDM] - Downloading:  19%|#8        | 1.34M/7.06M [00:00&lt;00:02, 2.50MB/s][WDM] - Downloading:  23%|##2       | 1.62M/7.06M [00:00&lt;00:02, 2.64MB/s][WDM] - Downloading:  27%|##6       | 1.90M/7.06M [00:00&lt;00:01, 2.72MB/s][WDM] - Downloading:  31%|###       | 2.18M/7.06M [00:00&lt;00:01, 2.75MB/s][WDM] - Downloading:  35%|###4      | 2.46M/7.06M [00:00&lt;00:01, 2.80MB/s][WDM] - Downloading:  39%|###8      | 2.75M/7.06M [00:01&lt;00:01, 2.87MB/s][WDM] - Downloading:  43%|####2     | 3.03M/7.06M [00:01&lt;00:01, 2.88MB/s][WDM] - Downloading:  47%|####7     | 3.32M/7.06M [00:01&lt;00:01, 2.86MB/s][WDM] - Downloading:  51%|#####     | 3.60M/7.06M [00:01&lt;00:01, 2.87MB/s][WDM] - Downloading:  55%|#####5    | 3.90M/7.06M [00:01&lt;00:01, 2.87MB/s][WDM] - Downloading:  60%|#####9    | 4.23M/7.06M [00:01&lt;00:00, 3.00MB/s][WDM] - Downloading:  64%|######3   | 4.52M/7.06M [00:01&lt;00:00, 2.94MB/s][WDM] - Downloading:  68%|######8   | 4.83M/7.06M [00:01&lt;00:00, 3.04MB/s][WDM] - Downloading:  73%|#######2  | 5.12M/7.06M [00:01&lt;00:00, 3.02MB/s][WDM] - Downloading:  77%|#######6  | 5.41M/7.06M [00:02&lt;00:00, 2.99MB/s][WDM] - Downloading:  81%|########  | 5.71M/7.06M [00:02&lt;00:00, 2.97MB/s][WDM] - Downloading:  85%|########5 | 6.02M/7.06M [00:02&lt;00:00, 3.03MB/s][WDM] - Downloading:  89%|########9 | 6.32M/7.06M [00:02&lt;00:00, 3.04MB/s][WDM] - Downloading:  94%|#########3| 6.62M/7.06M [00:02&lt;00:00, 3.01MB/s][WDM] - Downloading:  98%|#########8| 6.93M/7.06M [00:02&lt;00:00, 3.05MB/s][WDM] - Downloading: 100%|##########| 7.06M/7.06M [00:02&lt;00:00, 2.87MB/s]</msg>
+<msg time="2025-05-07T12:41:04.460584" level="FAIL">PermissionError: [Errno 13] Permission denied: '/home/robot'</msg>
+<msg time="2025-05-07T12:41:04.463978" level="DEBUG">Traceback (most recent call last):
+  File "/app/lib/DriverManager.py", line 27, in get_chrome_driver
+    return ChromeDriverManager(version=driver_version).install()
+  File "/usr/local/lib/python3.9/site-packages/webdriver_manager/chrome.py", line 39, in install
+    driver_path = self._get_driver_path(self.driver)
+  File "/usr/local/lib/python3.9/site-packages/webdriver_manager/core/manager.py", line 31, in _get_driver_path
+    binary_path = self.driver_cache.save_file_to_cache(driver, file)
+  File "/usr/local/lib/python3.9/site-packages/webdriver_manager/core/driver_cache.py", line 45, in save_file_to_cache
+    archive = save_file(file, path)
+  File "/usr/local/lib/python3.9/site-packages/webdriver_manager/core/utils.py", line 38, in save_file
+    os.makedirs(directory, exist_ok=True)
+  File "/usr/local/lib/python3.9/os.py", line 215, in makedirs
+    makedirs(head, exist_ok=exist_ok)
+  File "/usr/local/lib/python3.9/os.py", line 215, in makedirs
+    makedirs(head, exist_ok=exist_ok)
+  File "/usr/local/lib/python3.9/os.py", line 215, in makedirs
+    makedirs(head, exist_ok=exist_ok)
+  [Previous line repeated 2 more times]
+  File "/usr/local/lib/python3.9/os.py", line 225, in makedirs
+    mkdir(name, mode)
+PermissionError: [Errno 13] Permission denied: '/home/robot'</msg>
+<var>${driver_path}</var>
+<status status="FAIL" start="2025-05-07T12:41:00.918720" elapsed="3.545345">PermissionError: [Errno 13] Permission denied: '/home/robot'</status>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<arg>executable_path=${driver_path}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="NOT RUN" start="2025-05-07T12:41:04.466491" elapsed="0.000194"/>
+</kw>
+<status status="FAIL" start="2025-05-07T12:41:00.918143" elapsed="3.549037">PermissionError: [Errno 13] Permission denied: '/home/robot'</status>
+</kw>
+<test id="s1-s1-t1" name="Verify Google Title" line="19">
+<doc>Open google.com and verify its title</doc>
+<status status="FAIL" start="2025-05-07T12:41:04.467708" elapsed="0.001456">Parent suite setup failed:
+PermissionError: [Errno 13] Permission denied: '/home/robot'</status>
+</test>
+<kw name="Close All Browsers" owner="SeleniumLibrary" type="TEARDOWN">
+<msg time="2025-05-07T12:41:04.471314" level="TRACE">Arguments: [  ]</msg>
+<msg time="2025-05-07T12:41:04.471937" level="DEBUG">Closing all browsers.</msg>
+<msg time="2025-05-07T12:41:04.472404" level="TRACE">Return: None</msg>
+<doc>Closes all open browsers and resets the browser cache.</doc>
+<status status="PASS" start="2025-05-07T12:41:04.470986" elapsed="0.001779"/>
+</kw>
+<status status="FAIL" start="2025-05-07T12:41:00.683349" elapsed="3.789530">Suite setup failed:
+PermissionError: [Errno 13] Permission denied: '/home/robot'</status>
+</suite>
+<suite id="s1-s2" name="Hello World" source="/app/tests/hello_world.robot">
+<test id="s1-s2-t1" name="Hello World Should Pass" line="5">
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-05-07T12:41:04.478349" level="TRACE">Arguments: [ 'Hello, Robot Framework on macOS!' ]</msg>
+<msg time="2025-05-07T12:41:04.478440" level="INFO">Hello, Robot Framework on macOS!</msg>
+<msg time="2025-05-07T12:41:04.478467" level="TRACE">Return: None</msg>
+<arg>Hello, Robot Framework on macOS!</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-05-07T12:41:04.478169" elapsed="0.000420"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<msg time="2025-05-07T12:41:04.479043" level="TRACE">Arguments: [ True | msg='Basic sanity check' ]</msg>
+<msg time="2025-05-07T12:41:04.479156" level="TRACE">Return: None</msg>
+<arg>${True}</arg>
+<arg>msg=Basic sanity check</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-05-07T12:41:04.478765" elapsed="0.000463"/>
+</kw>
+<status status="PASS" start="2025-05-07T12:41:04.477633" elapsed="0.001782"/>
+</test>
+<status status="PASS" start="2025-05-07T12:41:04.473685" elapsed="0.006174"/>
+</suite>
+<status status="FAIL" start="2025-05-07T12:41:00.656932" elapsed="3.823388"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Tests" id="s1" pass="1" fail="1" skip="0">Tests</stat>
+<stat name="Browser Test" id="s1-s1" pass="0" fail="1" skip="0">Tests.Browser Test</stat>
+<stat name="Hello World" id="s1-s2" pass="1" fail="0" skip="0">Tests.Hello World</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

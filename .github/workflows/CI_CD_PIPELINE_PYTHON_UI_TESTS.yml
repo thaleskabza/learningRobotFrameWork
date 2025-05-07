@@ -2,7 +2,7 @@ name: Robot Framework UI Automation Tests
 
 on:
   schedule:
-    - cron: '30 6 * * *'     # Daily at 06:30 UTC
+    - cron: '30 6 * * *'     # daily at 06:30 UTC
   push:
     branches: [ main, master, dev, feature ]
   pull_request:
@@ -13,14 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
-    strategy:
-      matrix:
-        browser: [chrome, firefox]
-      fail-fast: false
-
+    # make these available to every step
     env:
-      BROWSER_NAME: ${{ matrix.browser }}
-      ROBOT_REPORTS: robot-reports
+      DOCKER_BUILDKIT: 1
+      ROBOT_REPORTS: reports
 
     steps:
       - name: Checkout repository
@@ -31,26 +27,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose-plugin
 
-      - name: Log in to Docker Hub (optional, to avoid rate limits)
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-        if: env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN
-
       - name: Build Docker images
-        run: |
-          echo "Building Docker images..."
-          docker compose build --no-cache
-        env:
-          DOCKER_BUILDKIT: 1
+        run: docker compose build --no-cache
 
       - name: Start Selenium Hub and browser nodes
-        run: |
-          echo "Starting services..."
-          docker compose up -d
-        env:
-          DOCKER_BUILDKIT: 1
+        run: docker compose up -d
         timeout-minutes: 5
 
       - name: Wait for Selenium Hub to be ready
@@ -58,38 +39,37 @@ jobs:
           echo "Waiting for Selenium Hub..."
           for i in {1..20}; do
             if curl -s http://localhost:4444/wd/hub/status | grep -q '"ready":true'; then
-              echo "Selenium Hub is ready!"
-              break
+              echo "✅ Selenium Hub is ready"
+              exit 0
             fi
-            echo "  still waiting..."
+            echo "  still waiting…"
             sleep 3
           done
+          echo "❌ Selenium Hub failed to start in time"
+          exit 1
 
       - name: Run Robot Framework tests
         run: |
-          echo "Running Robot Framework tests for browser: $BROWSER_NAME..."
-          docker compose run --rm -e BROWSER_NAME=$BROWSER_NAME test-runner
-        env:
-          DOCKER_BUILDKIT: 1
+          echo "🔍 Running Robot Framework tests…"
+          mkdir -p "$ROBOT_REPORTS"
+          docker compose run --rm test-runner \
+            robot --outputdir "$ROBOT_REPORTS" tests/
         continue-on-error: true
 
       - name: Tear down services
         if: always()
-        run: |
-          echo "Tearing down services..."
-          docker compose down -v
+        run: docker compose down -v
 
       - name: List generated Robot reports
         if: always()
         run: |
-          echo "Listing generated reports..."
-          ls -R $ROBOT_REPORTS || echo "No reports found."
+          echo "📂 Contents of $ROBOT_REPORTS:"
+          ls -R "$ROBOT_REPORTS" || echo "No reports found."
 
       - name: Upload Robot reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: robot-reports-${{ matrix.browser }}
+          name: robot-reports
           path: ${{ env.ROBOT_REPORTS }}
           retention-days: 7
-          
