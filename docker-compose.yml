@@ -42,6 +42,8 @@ services:
       - selenium-hub
       - chrome
       - firefox
+    environment:
+      - SELENIUM_HUB_URL=http://selenium-hub:4444/wd/hub
     volumes:
       - ./:/app:cached
       - robot_reports:/app/robot-reports
