@@ -28,8 +28,9 @@ RUN pip install --upgrade pip && \
 
 # Copy project & prepare output dirs
 COPY . .
-RUN mkdir -p "$ROBOT_REPORTS_DIR" "$SCREENSHOTS_DIR" && \
-    chown -R robot:robot /app
+RUN mkdir -p "$ROBOT_REPORTS_DIR" "$SCREENSHOTS_DIR" \
+ && chown -R robot:robot /app \
+ && chmod -R 0777 "$ROBOT_REPORTS_DIR" "$SCREENSHOTS_DIR"
 
 USER robot
 
