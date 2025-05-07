@@ -1,0 +1,95 @@
+name: Robot Framework UI Automation Tests
+
+on:
+  schedule:
+    - cron: '30 6 * * *'     # Daily at 06:30 UTC
+  push:
+    branches: [ main, master, dev, feature ]
+  pull_request:
+    branches: [ main, master, dev, feature ]
+
+jobs:
+  ui-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+      fail-fast: false
+
+    env:
+      BROWSER_NAME: ${{ matrix.browser }}
+      ROBOT_REPORTS: robot-reports
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Docker Compose plugin
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
+
+      - name: Log in to Docker Hub (optional, to avoid rate limits)
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        if: env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN
+
+      - name: Build Docker images
+        run: |
+          echo "Building Docker images..."
+          docker compose build --no-cache
+        env:
+          DOCKER_BUILDKIT: 1
+
+      - name: Start Selenium Hub and browser nodes
+        run: |
+          echo "Starting services..."
+          docker compose up -d
+        env:
+          DOCKER_BUILDKIT: 1
+        timeout-minutes: 5
+
+      - name: Wait for Selenium Hub to be ready
+        run: |
+          echo "Waiting for Selenium Hub..."
+          for i in {1..20}; do
+            if curl -s http://localhost:4444/wd/hub/status | grep -q '"ready":true'; then
+              echo "Selenium Hub is ready!"
+              break
+            fi
+            echo "  still waiting..."
+            sleep 3
+          done
+
+      - name: Run Robot Framework tests
+        run: |
+          echo "Running Robot Framework tests for browser: $BROWSER_NAME..."
+          docker compose run --rm -e BROWSER_NAME=$BROWSER_NAME test-runner
+        env:
+          DOCKER_BUILDKIT: 1
+        continue-on-error: true
+
+      - name: Tear down services
+        if: always()
+        run: |
+          echo "Tearing down services..."
+          docker compose down -v
+
+      - name: List generated Robot reports
+        if: always()
+        run: |
+          echo "Listing generated reports..."
+          ls -R $ROBOT_REPORTS || echo "No reports found."
+
+      - name: Upload Robot reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-reports-${{ matrix.browser }}
+          path: ${{ env.ROBOT_REPORTS }}
+          retention-days: 7
+          

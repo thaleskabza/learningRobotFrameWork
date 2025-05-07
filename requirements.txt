@@ -1,0 +1,40 @@
+# —————————————————————————————
+# Core Test Frameworks
+# —————————————————————————————
+robotframework>=6.0.1
+robotframework-seleniumlibrary>=6.0.0
+
+# —————————————————————————————
+# UI Testing (Python Selenium + auto-driver)
+# —————————————————————————————
+selenium==4.8.0
+webdriver-manager==3.8.5
+
+# —————————————————————————————
+# BDD (Behave)
+# —————————————————————————————
+behave==1.2.6
+
+# —————————————————————————————
+# Optional: Pytest-based Testing & Reporting
+# —————————————————————————————
+pytest==7.2.2
+pytest-bdd==4.0.2
+pytest-html==3.2.0
+
+# —————————————————————————————
+# HTTP & Mocking
+# —————————————————————————————
+requests==2.31.0
+requests-mock==1.12.1
+
+# —————————————————————————————
+# Performance Testing
+# —————————————————————————————
+locust==2.16.0
+
+
+# —————————————————————————————
+# MySQL Connectivity
+# —————————————————————————————
+pymysql==1.0.2
