@@ -43,13 +43,16 @@ services:
       - chrome
       - firefox
     environment:
-      - SELENIUM_HUB_URL=http://selenium-hub:4444/wd/hub
+       SELENIUM_HUB_URL: http://selenium-hub:4444/wd/hub
+       PYTHONPATH : /app 
     volumes:
       - ./:/app:cached
+      - ./resources:/app/resources:ro
       - robot_reports:/app/robot-reports
       - screenshots:/app/target/screenshots
     networks:
       - testnet
+
 
 volumes:
   robot_reports:
