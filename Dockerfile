@@ -26,13 +26,15 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# 4) Copy entrypoint helper
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# 5) Copy rest of project (tests, resources, etc.)
+# 4) Copy project, pre-create dirs & fix perms
 COPY . .
+RUN mkdir -p "$ROBOT_REPORTS_DIR" "$SCREENSHOTS_DIR" \
+ && chown -R robot:robot /app \
+ && chmod -R 0755 /app
 
-# 6) Switch to our entrypoint (which will drop to robot for us)
-ENTRYPOINT ["/entrypoint.sh"]
+# 5) Switch to robot
+USER robot
+
+# 6) Default command: run Robot into the pre-created dirs
+ENTRYPOINT ["robot"]
 CMD ["--outputdir", "/app/robot-reports", "--loglevel", "TRACE", "tests/"]

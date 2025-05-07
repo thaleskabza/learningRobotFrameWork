@@ -1,17 +1,15 @@
-# docker-compose.yml
 services:
   selenium-hub:
     image: selenium/hub:4.8.0
-    container_name: selenium-hub
     ports:
-      - "4444:4444"
-    networks:
-      - mynetwork
+      - '4444:4444'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
+    networks:
+      - testnet
 
   chrome:
     image: selenium/node-chrome:4.8.0
@@ -22,12 +20,8 @@ services:
       - SE_EVENT_BUS_HOST=selenium-hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_MAX_SESSIONS=5
-      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
-    volumes:
-      - /dev/shm:/dev/shm
     networks:
-      - mynetwork
+      - testnet
 
   firefox:
     image: selenium/node-firefox:4.8.0
@@ -38,59 +32,27 @@ services:
       - SE_EVENT_BUS_HOST=selenium-hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_MAX_SESSIONS=5
-      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
-    volumes:
-      - /dev/shm:/dev/shm
     networks:
-      - mynetwork
-
-  mysql:
-    image: mysql:8.0
-    container_name: mysql-A
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootpwd
-      - MYSQL_DATABASE=testdb
-      - MYSQL_USER=testuser
-      - MYSQL_PASSWORD=testpwd
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - mynetwork
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u testuser -ptestpwd"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - testnet
 
   test-runner:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
+    user: robot
     depends_on:
-      selenium-hub:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-    environment:
-      SELENIUM_HUB_URL: "http://selenium-hub:4444/wd/hub"
-      DB_HOST: "mysql"
-      DB_PORT: "3306"
-      DB_NAME: "testdb"
-      DB_USER: "testuser"
-      DB_PASSWORD: "testpwd"
+      - selenium-hub
+      - chrome
+      - firefox
     volumes:
-      - ./target/screenshots:/app/target/screenshots
-      - ./robot-reports:/app/robot-reports
+      - ./:/app:cached
+      - robot_reports:/app/robot-reports
+      - screenshots:/app/target/screenshots
     networks:
-      - mynetwork
-    # This command appends to the ENTRYPOINT ["robot"]
-    command: ["--outputdir", "/app/robot-reports", "--loglevel", "TRACE", "tests/"]
-
-networks:
-  mynetwork: {}
+      - testnet
 
 volumes:
-  mysql-data: {}
+  robot_reports:
+  screenshots:
+
+networks:
+  testnet:
+    driver: bridge
