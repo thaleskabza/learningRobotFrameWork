@@ -52,8 +52,7 @@ jobs:
         run: |
           echo "🔍 Running Robot Framework tests…"
           mkdir -p "$ROBOT_REPORTS"
-          docker compose run --rm test-runner \
-            robot --outputdir "$ROBOT_REPORTS" tests/
+          docker compose run --rm test-runner 
         continue-on-error: true
 
       - name: Tear down services
