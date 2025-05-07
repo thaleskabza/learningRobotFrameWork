@@ -1,4 +1,3 @@
-# Dockerfile
 FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED=1 \
@@ -7,33 +6,33 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-# Install OS deps, dev headers & cleanup
+# 1) Install deps + gosu
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       curl \
       build-essential \
       python3-dev \
       libffi-dev \
-      libssl-dev && \
+      libssl-dev \
+      gosu && \
     rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user
+# 2) Create robot user
 RUN groupadd -r robot && \
     useradd --no-log-init -r -g robot robot
 
-# Copy & install Python requirements
+# 3) Install Python requirements
 COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy project & prepare output dirs
+# 4) Copy entrypoint helper
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# 5) Copy rest of project (tests, resources, etc.)
 COPY . .
-RUN mkdir -p "$ROBOT_REPORTS_DIR" "$SCREENSHOTS_DIR" \
- && chown -R robot:robot /app \
- && chmod -R 0777 "$ROBOT_REPORTS_DIR" "$SCREENSHOTS_DIR"
 
-USER robot
-
-# Run Robot Framework by default; args can be overridden in docker-compose
-ENTRYPOINT ["robot"]
+# 6) Switch to our entrypoint (which will drop to robot for us)
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["--outputdir", "/app/robot-reports", "--loglevel", "TRACE", "tests/"]
