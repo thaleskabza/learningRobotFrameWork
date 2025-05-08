@@ -1,8 +1,8 @@
 *** Settings ***
 Library    ../lib/WebTablesLibrary.py
 
-Suite Setup      Open Web Tables    http://selenium-hub:4444/wd/hub    chrome
-Suite Teardown   Close Browser
+Suite Setup    Open Web Tables    http://selenium-hub:4444/wd/hub    chrome
+Suite Teardown Close Browser
 
 *** Variables ***
 ${CSV_FILE}    users.csv
