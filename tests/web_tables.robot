@@ -1,19 +1,21 @@
 *** Settings ***
+Library           Collections
 Library           ../lib/WebTablesLibrary.py
+
 Suite Setup       Open Web Tables    http://selenium-hub:4444/wd/hub    chrome
 Suite Teardown    Close Browser
 
 *** Variables ***
 ${CSV_FILE}       users.csv
-@{EXPECTED_HEADERS}    
-...               First Name    
-...               Last Name    
-...               User Name    
-...               Customer    
-...               Role    
-...               E-mail    
-...               Cell Phone    
-...               Locked
+@{EXPECTED_HEADERS}
+...    First Name
+...    Last Name
+...    User Name
+...    Customer
+...    Role
+...    E-mail
+...    Cell Phone
+...    Locked
 
 *** Test Cases ***
 Verify Browser Initialization
@@ -29,6 +31,7 @@ Validate User List Table
 
 Add User From CSV And Verify
     [Documentation]    Add a user from CSV and verify they appear in the user list
+    Sleep    2s
     Click Add User
     ${username}=    Add User From CSV    ${CSV_FILE}    0
     User Should Be Present In List    ${username}

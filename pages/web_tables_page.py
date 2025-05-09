@@ -3,9 +3,9 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from pages.base_page import BasePage
 from models.user_data import UserData
-from selenium.webdriver.support.ui import WebDriverWait
 
 
 class WebTablesPage(BasePage):
@@ -26,42 +26,15 @@ class WebTablesPage(BasePage):
             By.XPATH,
             "//button[contains(.,' Add User')]"
         ),
-        "firstName": (
-            By.NAME,
-            "FirstName"
-        ),
-        "lastName": (
-            By.NAME,
-            "LastName"
-        ),
-        "userName": (
-            By.NAME,
-            "UserName"
-        ),
-        "password": (
-            By.NAME,
-            "Password"
-        ),
-        "company_aaa": (
-            By.XPATH,
-            "//label[contains(text(),'Company AAA')]/input"
-        ),
-        "company_bbb": (
-            By.XPATH,
-            "//label[contains(text(),'Company BBB')]/input"
-        ),
-        "role": (
-            By.NAME,
-            "RoleId"
-        ),
-        "email": (
-            By.NAME,
-            "Email"
-        ),
-        "cellPhone": (
-            By.NAME,
-            "Mobilephone"
-        ),
+        "firstName": (By.NAME, "FirstName"),
+        "lastName": (By.NAME, "LastName"),
+        "userName": (By.NAME, "UserName"),
+        "password": (By.NAME, "Password"),
+        "company_aaa": (By.XPATH, "//label[contains(text(),'Company AAA')]/input"),
+        "company_bbb": (By.XPATH, "//label[contains(text(),'Company BBB')]/input"),
+        "role": (By.NAME, "RoleId"),
+        "email": (By.NAME, "Email"),
+        "cellPhone": (By.NAME, "Mobilephone"),
         "save": (
             By.XPATH,
             "//button[contains(@class,'btn-success') and normalize-space(text())='Save']"
@@ -77,7 +50,6 @@ class WebTablesPage(BasePage):
         self.wait = WebDriverWait(driver, 10)
 
     def navigate_to(self):
-        """Navigate to the Web Tables page."""
         print("[PAGE] Navigating to Web Tables page...")
         try:
             self.driver.get(self.URL)
@@ -87,8 +59,7 @@ class WebTablesPage(BasePage):
             print(f"[PAGE] Failed to navigate: {str(e)}")
             raise
 
-    def is_user_list_table_displayed(self) -> bool:
-        """Check if the user list table is displayed."""
+    def is_user_list_table_displayed(self):
         print("[PAGE] Checking if user list table is displayed.")
         try:
             element = self.wait_for_element(self.locators["table"])
@@ -98,7 +69,6 @@ class WebTablesPage(BasePage):
             return False
 
     def get_header_list(self):
-        """Retrieve the table headers."""
         print("[PAGE] Retrieving header list.")
         try:
             header_elems = self.driver.find_elements(
@@ -113,22 +83,18 @@ class WebTablesPage(BasePage):
             return []
 
     def click_add_user(self):
-        """Click the 'Add User' button after waiting for modal to clear."""
         print("[PAGE] Clicking 'Add User' button.")
         try:
-            # Wait for any existing modal backdrop to disappear
-            try:
-                WebDriverWait(self.driver, 3).until_not(
-                    EC.presence_of_element_located(self.locators["modal_backdrop"])
-                )
-                print("[PAGE]  Modal backdrop cleared.")
-            except Exception:
-                print("[PAGE] No modal backdrop or timeout ignored.")
+            WebDriverWait(self.driver, 10).until(
+                EC.invisibility_of_element_located(self.locators["modal_backdrop"])
+            )
+            print("[PAGE] Modal backdrop cleared.")
+        except Exception:
+            print("[PAGE] No modal backdrop found or still present.")
 
+        try:
             button = self.wait.until(EC.element_to_be_clickable(self.locators["add_user"]))
             button.click()
-
-            # Wait for first name field to be visible
             self.wait.until(EC.visibility_of_element_located(self.locators["firstName"]))
             print("[PAGE] Add User modal is visible.")
         except Exception as e:
@@ -136,7 +102,6 @@ class WebTablesPage(BasePage):
             raise
 
     def add_user(self, user: UserData):
-        """Add a user to the table."""
         print(f"[PAGE] Adding user: {user}")
         try:
             self.wait_for_element(self.locators["firstName"]).send_keys(user.first_name)
@@ -149,26 +114,22 @@ class WebTablesPage(BasePage):
             if user.email:
                 self.wait_for_element(self.locators["email"]).send_keys(user.email)
 
-            # Select the company radio button dynamically
             cust_locator = (
                 By.XPATH,
                 f"//label[contains(normalize-space(),'{user.company}')]/input"
             )
             self.wait.until(EC.element_to_be_clickable(cust_locator)).click()
 
-            # Select role from dropdown
             role_select = Select(self.wait_for_element(self.locators["role"]))
             role_select.select_by_visible_text(user.role)
 
-            # Save user
             self.wait.until(EC.element_to_be_clickable(self.locators["save"])).click()
             print(f"[PAGE] User '{user.username}' saved successfully.")
         except Exception as e:
             print(f"[PAGE] Failed to add user: {str(e)}")
             raise
 
-    def is_user_present_in_list(self, username: str) -> bool:
-        """Check if a user is present in the table."""
+    def is_user_present_in_list(self, username: str):
         print(f"[PAGE] Verifying presence of user '{username}' in table.")
         try:
             rows = self.driver.find_elements(
