@@ -62,13 +62,13 @@ jobs:
       - name: List generated Robot reports
         if: always()
         run: |
-          echo "📂 Contents of $ROBOT_REPORTS:"
-          ls -R "$ROBOT_REPORTS" || echo "No reports found."
+          echo "📂 Contents of  /app/robot-reports/"
+          ls -R " /app/robot-reports/ || echo "No reports found."
 
       - name: Upload Robot reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: robot-reports
-          path: ${{ env.ROBOT_REPORTS }}
+          path: /app/robot-reports/
           retention-days: 7
