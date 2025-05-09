@@ -1,6 +1,6 @@
 services:
   selenium-hub:
-    image: selenium/hub:4.8.0
+    image: selenium/hub:nightly
     ports:
       - '4444:4444'
     healthcheck:
