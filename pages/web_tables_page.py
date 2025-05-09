@@ -82,24 +82,28 @@ class WebTablesPage(BasePage):
             print(f"[PAGE] Failed to retrieve headers: {str(e)}")
             return []
 
-    def click_add_user(self):
-        print("[PAGE] Clicking 'Add User' button.")
-        try:
-            WebDriverWait(self.driver, 10).until(
-                EC.invisibility_of_element_located(self.locators["modal_backdrop"])
-            )
-            print("[PAGE] Modal backdrop cleared.")
-        except Exception:
-            print("[PAGE] No modal backdrop found or still present.")
+def click_add_user(self):
+    print("[PAGE] Clicking 'Add User' button.")
+    try:
+        # Wait until modal backdrop is not visible (blocks click)
+        self.wait.until(
+            EC.invisibility_of_element_located(self.locators["modal_backdrop"])
+        )
+        print("[PAGE] Modal backdrop cleared.")
+    except Exception as e:
+        print(f"[PAGE] Modal backdrop wait failed (ignored): {e}")
 
-        try:
-            button = self.wait.until(EC.element_to_be_clickable(self.locators["add_user"]))
-            button.click()
-            self.wait.until(EC.visibility_of_element_located(self.locators["firstName"]))
-            print("[PAGE] Add User modal is visible.")
-        except Exception as e:
-            print(f"[PAGE] Failed to click Add User: {str(e)}")
-            raise
+    try:
+        button = self.wait.until(EC.element_to_be_clickable(self.locators["add_user"]))
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", button)
+        button.click()
+
+        self.wait.until(EC.visibility_of_element_located(self.locators["firstName"]))
+        print("[PAGE] Add User modal is visible.")
+    except Exception as e:
+        print(f"[PAGE] Failed to click Add User: {str(e)}")
+        raise
+
 
     def add_user(self, user: UserData):
         print(f"[PAGE] Adding user: {user}")
