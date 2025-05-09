@@ -30,7 +30,8 @@ jobs:
         run: docker compose build --no-cache
 
       - name: Start Selenium Hub and browser nodes
-        run: docker compose up -d
+        run: docker compose up -d --scale chrome=4 --scale firefox=2 -d
+
         timeout-minutes: 5
 
       - name: Wait for Selenium Hub to be ready
