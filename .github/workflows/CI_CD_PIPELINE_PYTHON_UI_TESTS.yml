@@ -2,11 +2,11 @@ name: Robot Framework UI Automation Tests
 
 on:
   schedule:
-    - cron: '30 6 * * *'     # daily at 06:30 UTC
+    - cron: '30 6 * * *' # daily at 06:30 UTC
   push:
-    branches: [ main, master, dev, feature ]
+    branches: [main, master, dev, feature]
   pull_request:
-    branches: [ main, master, dev, feature ]
+    branches: [main, master, dev, feature]
 
 jobs:
   ui-tests:
@@ -24,7 +24,7 @@ jobs:
       - name: Install Docker Compose plugin
         run: |
           sudo apt-get update
-    
+          
 
       - name: Build Docker images
         run: docker compose build --no-cache
@@ -38,7 +38,7 @@ jobs:
           echo "⏳ Waiting for Selenium Grid…"
           for i in {1..60}; do
             if curl -s http://localhost:4444/wd/hub/status \
-                 | grep -Eq '"ready"[[:space:]]*:[[:space:]]*true'; then
+              | grep -Eq '"ready"[[:space:]]*:[[:space:]]*true'; then
               echo "✅ Selenium Grid ready"
               exit 0
             fi
@@ -52,23 +52,23 @@ jobs:
         run: |
           echo "🔍 Running Robot Framework tests…"
           mkdir -p "$ROBOT_REPORTS"
-          docker compose run --rm test-runner 
+          docker compose run --rm test-runner
         continue-on-error: true
-
-      - name: Tear down services
-        if: always()
-        run: docker compose down -v
 
       - name: List generated Robot reports
         if: always()
         run: |
-          echo "📂 Contents of  /app/robot-reports/"
-          ls -R " /app/robot-reports/ || echo "No reports found."
+          echo "📂 Contents of reports directory:"
+          ls -R ./reports || echo "No reports found."
 
       - name: Upload Robot reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: robot-reports
-          path: /app/robot-reports/
+          path: reports/
           retention-days: 7
+
+      - name: Tear down services
+        if: always()
+        run: docker compose down -v
