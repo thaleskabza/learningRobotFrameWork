@@ -1,8 +1,11 @@
+# pages/web_tables_page.py
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 from models.user_data import UserData
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class WebTablesPage(BasePage):
@@ -14,6 +17,10 @@ class WebTablesPage(BasePage):
         "table": (
             By.CSS_SELECTOR,
             'table.smart-table.table-striped[table-title="Smart Table example"]'
+        ),
+        "modal_backdrop": (
+            By.CLASS_NAME,
+            "modal-backdrop"
         ),
         "add_user": (
             By.XPATH,
@@ -67,16 +74,17 @@ class WebTablesPage(BasePage):
 
     def __init__(self, driver):
         super().__init__(driver)
+        self.wait = WebDriverWait(driver, 10)
 
     def navigate_to(self):
         """Navigate to the Web Tables page."""
         print("[PAGE] Navigating to Web Tables page...")
         try:
             self.driver.get(self.URL)
-            self.wait_for_element(self.locators["table"])  # Wait for table to load
-            print("[PAGE] ✅ Page loaded successfully.")
+            self.wait_for_element(self.locators["table"])
+            print("[PAGE] Page loaded successfully.")
         except Exception as e:
-            print(f"[PAGE] ❌ Failed to navigate: {str(e)}")
+            print(f"[PAGE] Failed to navigate: {str(e)}")
             raise
 
     def is_user_list_table_displayed(self) -> bool:
@@ -86,7 +94,7 @@ class WebTablesPage(BasePage):
             element = self.wait_for_element(self.locators["table"])
             return element.is_displayed()
         except Exception as e:
-            print(f"[PAGE] ❌ Table not displayed: {str(e)}")
+            print(f"[PAGE] Table not displayed: {str(e)}")
             return False
 
     def get_header_list(self):
@@ -101,17 +109,30 @@ class WebTablesPage(BasePage):
             print(f"[PAGE] Headers found: {headers}")
             return headers
         except Exception as e:
-            print(f"[PAGE] ❌ Failed to retrieve headers: {str(e)}")
+            print(f"[PAGE] Failed to retrieve headers: {str(e)}")
             return []
 
     def click_add_user(self):
-        """Click the 'Add User' button."""
+        """Click the 'Add User' button after waiting for modal to clear."""
         print("[PAGE] Clicking 'Add User' button.")
         try:
+            # Wait for any existing modal backdrop to disappear
+            try:
+                WebDriverWait(self.driver, 3).until_not(
+                    EC.presence_of_element_located(self.locators["modal_backdrop"])
+                )
+                print("[PAGE]  Modal backdrop cleared.")
+            except Exception:
+                print("[PAGE] No modal backdrop or timeout ignored.")
+
             button = self.wait.until(EC.element_to_be_clickable(self.locators["add_user"]))
             button.click()
+
+            # Wait for first name field to be visible
+            self.wait.until(EC.visibility_of_element_located(self.locators["firstName"]))
+            print("[PAGE] Add User modal is visible.")
         except Exception as e:
-            print(f"[PAGE] ❌ Failed to click Add User: {str(e)}")
+            print(f"[PAGE] Failed to click Add User: {str(e)}")
             raise
 
     def add_user(self, user: UserData):
@@ -128,22 +149,22 @@ class WebTablesPage(BasePage):
             if user.email:
                 self.wait_for_element(self.locators["email"]).send_keys(user.email)
 
-            # Select company radio button
+            # Select the company radio button dynamically
             cust_locator = (
                 By.XPATH,
                 f"//label[contains(normalize-space(),'{user.company}')]/input"
             )
             self.wait.until(EC.element_to_be_clickable(cust_locator)).click()
 
-            # Select role
+            # Select role from dropdown
             role_select = Select(self.wait_for_element(self.locators["role"]))
             role_select.select_by_visible_text(user.role)
 
-            # Click save
+            # Save user
             self.wait.until(EC.element_to_be_clickable(self.locators["save"])).click()
-            print(f"[PAGE] User '{user.username}' saved.")
+            print(f"[PAGE] User '{user.username}' saved successfully.")
         except Exception as e:
-            print(f"[PAGE] ❌ Failed to add user: {str(e)}")
+            print(f"[PAGE] Failed to add user: {str(e)}")
             raise
 
     def is_user_present_in_list(self, username: str) -> bool:
@@ -158,5 +179,5 @@ class WebTablesPage(BasePage):
             print(f"[PAGE] User found: {found}")
             return found
         except Exception as e:
-            print(f"[PAGE] ❌ Failed to verify user presence: {str(e)}")
+            print(f"[PAGE] Failed to verify user presence: {str(e)}")
             return False
