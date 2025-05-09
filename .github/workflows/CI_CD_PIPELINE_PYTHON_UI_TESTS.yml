@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: robot-reports
-          path: ./app/robot-reports/
+          path: ./robot-reports/
           retention-days: 7
 
       - name: Tear down services
