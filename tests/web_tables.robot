@@ -7,6 +7,7 @@ Suite Teardown    Close Browser
 
 *** Variables ***
 ${CSV_FILE}       users.csv
+
 @{EXPECTED_HEADERS}
 ...    First Name
 ...    Last Name
@@ -16,6 +17,7 @@ ${CSV_FILE}       users.csv
 ...    E-mail
 ...    Cell Phone
 ...    Locked
+...    Action
 
 *** Test Cases ***
 Verify Browser Initialization
@@ -24,14 +26,11 @@ Verify Browser Initialization
     Should Be True    ${status}    Browser initialization failed
 
 Validate User List Table
-    [Documentation]    Verify that the user list table and headers are present
-    Verify User List Table Displayed
-    ${headers}=    Get Header List
-    Should Be Equal As Lists    ${headers}    @{EXPECTED_HEADERS}
+    [Documentation]    Verify that the user list table and headers are present (including 'Action')
+    Validate User List Table    @{EXPECTED_HEADERS}
 
 Add User From CSV And Verify
     [Documentation]    Add a user from CSV and verify they appear in the user list
     Wait Until Keyword Succeeds    10x    2s    Click Add User
     ${username}=    Add User From CSV    ${CSV_FILE}    0
     User Should Be Present In List    ${username}
-

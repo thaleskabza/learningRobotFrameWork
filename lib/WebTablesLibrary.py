@@ -8,7 +8,6 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from pages.web_tables_page import WebTablesPage
 from models.user_data import UserData
 
-
 class WebTablesLibrary:
     """Robot keyword library wrapping WebTablesPage POM."""
     ROBOT_LIBRARY_SCOPE = 'SUITE'
@@ -103,3 +102,33 @@ class WebTablesLibrary:
         status = self.driver is not None and self.page is not None
         print(f"[STATUS] Is browser open? {status}")
         return status
+
+    def validate_user_list_table(self, expected_headers):
+        """
+        Validate that the user list table is displayed and that the headers
+        exactly match the expected_headers list (including 'Action').
+        """
+        self._ensure_page_initialized()
+
+        # 1) ensure the table is visible
+        if not self.page.is_user_list_table_displayed():
+            raise AssertionError("❌ User list table is not displayed.")
+        print("[CHECK] ✅ User list table is visible.")
+
+        # 2) fetch the actual headers
+        actual_headers = self.page.get_header_list()
+        print(f"[DATA] Retrieved headers for validation: {actual_headers}")
+
+        # 3) ensure 'Action' header is present
+        if 'Action' not in actual_headers:
+            raise AssertionError("❌ 'Action' header is missing.")
+        print("[CHECK] ✅ 'Action' header is present.")
+
+        # 4) full-list comparison
+        if list(actual_headers) != list(expected_headers):
+            raise AssertionError(
+                f"[ASSERT] Header mismatch.\n"
+                f"  Actual:   {actual_headers}\n"
+                f"  Expected: {expected_headers}"
+            )
+        print("[ASSERT] ✅ Header list matches expected list.")
