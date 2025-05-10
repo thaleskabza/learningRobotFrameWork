@@ -31,7 +31,6 @@ jobs:
 
       - name: Start Selenium Hub and browser nodes
         run: docker compose up -d
-
         timeout-minutes: 5
 
       - name: Wait for Selenium Hub to be ready
@@ -40,27 +39,29 @@ jobs:
           for i in {1..60}; do
             if curl -s http://localhost:4444/wd/hub/status \
               | grep -Eq '"ready"[[:space:]]*:[[:space:]]*true'; then
-              echo "✅ Selenium Grid ready"
+              echo "Selenium Grid ready"
               exit 0
             fi
             echo "  still waiting… ($i/60)"
             sleep 3
           done
-          echo "❌ Selenium Grid failed to start in time"
+          echo "Selenium Grid failed to start in time"
           exit 1
 
       - name: Run Robot Framework tests
         run: |
-          echo "🔍 Running Robot Framework tests…"
+          echo "Running Robot Framework tests…"
           mkdir -p "$ROBOT_REPORTS"
-          docker compose run --rm test-runner
+          docker compose run --rm \
+            -v "${{ github.workspace }}/$ROBOT_REPORTS:/app/robot-reports" \
+            test-runner
         continue-on-error: true
 
       - name: List generated Robot reports
         if: always()
         run: |
           echo "📂 Contents of reports directory:"
-          ls -R ./robot-reports|| echo "No reports found."
+          ls -R ./robot-reports || echo "No reports found."
 
       - name: Upload Robot reports
         if: always()

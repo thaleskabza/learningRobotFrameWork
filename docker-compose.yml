@@ -48,6 +48,7 @@ services:
        SELENIUM_HUB_URL: http://selenium-hub:4444/wd/hub
        PYTHONPATH : /app 
     volumes:
+      - ./robot-reports:/app/robot-reports 
       - ./:/app:cached
       - ./resources:/app/resources:ro
       - robot_reports:/app/robot-reports
