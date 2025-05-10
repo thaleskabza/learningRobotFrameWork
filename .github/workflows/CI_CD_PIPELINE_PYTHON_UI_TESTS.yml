@@ -52,6 +52,7 @@ jobs:
         run: |
           echo "Running Robot Framework tests…"
           mkdir -p "$ROBOT_REPORTS"
+          chmod -R 777 "$ROBOT_REPORTS"
           docker compose run --rm \
             -v "${{ github.workspace }}/$ROBOT_REPORTS:/app/robot-reports" \
             test-runner
