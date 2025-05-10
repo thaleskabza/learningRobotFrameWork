@@ -54,7 +54,7 @@ jobs:
           echo "Running Robot Framework tests…"
           mkdir -p "$ROBOT_REPORTS"
           docker compose run --rm test-runner
-        continue-on-error: true
+        continue-on-error: false
 
       - name: List generated Robot reports
         if: always()
