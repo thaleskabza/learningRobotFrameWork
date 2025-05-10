@@ -23,7 +23,7 @@ class WebTablesLibrary:
 
     def _ensure_page_initialized(self):
         if not self.driver or not self.page:
-            raise RuntimeError("❌ Browser is not opened or page object is not initialized.")
+            raise RuntimeError("Browser is not opened or page object is not initialized.")
 
     def open_web_tables(self, grid_url='http://selenium-hub:4444/wd/hub', browser='chrome'):
         print(f"[OPEN] Attempting to open browser at: {grid_url} using: {browser.upper()}")
@@ -36,7 +36,7 @@ class WebTablesLibrary:
             self.driver.maximize_window()
             self.page = WebTablesPage(self.driver)
             self.page.navigate_to()
-            print("[OPEN] ✅ Browser opened and navigated to the Web Tables page.")
+            print("[OPEN]  Browser opened and navigated to the Web Tables page.")
         except Exception as e:
             raise RuntimeError(f"[ERROR] Failed to open browser or navigate to page: {str(e)}")
 
@@ -52,8 +52,8 @@ class WebTablesLibrary:
     def verify_user_list_table_displayed(self):
         self._ensure_page_initialized()
         if not self.page.is_user_list_table_displayed():
-            raise AssertionError("❌ User list table is not displayed.")
-        print("[CHECK] ✅ User list table is visible.")
+            raise AssertionError(" User list table is not displayed.")
+        print("[CHECK] User list table is visible.")
 
     def get_header_list(self):
         self._ensure_page_initialized()
@@ -83,7 +83,7 @@ class WebTablesLibrary:
         )
 
         if not os.path.isfile(csv_path):
-            raise FileNotFoundError(f"[ERROR] ❌ CSV file not found at: {csv_path}")
+            raise FileNotFoundError(f"[ERROR]  CSV file not found at: {csv_path}")
 
         print(f"[DATA] Reading user data from: {csv_path}, row: {row_index}")
         with open(csv_path, newline='', encoding='utf-8') as f:
@@ -102,14 +102,14 @@ class WebTablesLibrary:
 
         self.click_add_user()
         self.page.add_user(user)
-        print(f"[ADD] ✅ User added with username: {user.username}")
+        print(f"[ADD] User added with username: {user.username}")
         return user.username
 
     def user_should_be_present_in_list(self, username):
         self._ensure_page_initialized()
         if not self.page.is_user_present_in_list(username):
-            raise AssertionError(f"[ASSERT] ❌ User '{username}' not found in the user list.")
-        print(f"[ASSERT] ✅ User '{username}' is present in the user list.")
+            raise AssertionError(f"[ASSERT]  User '{username}' not found in the user list.")
+        print(f"[ASSERT] User '{username}' is present in the user list.")
 
     def is_browser_open(self):
         status = self.driver is not None and self.page is not None
@@ -132,7 +132,7 @@ class WebTablesLibrary:
         # 1) ensure the table is visible
         if not self.page.is_user_list_table_displayed():
             raise AssertionError(" User list table is not displayed.")
-        print("[CHECK] ✅ User list table is visible.")
+        print("[CHECK]  User list table is visible.")
 
         # 2) fetch the actual headers
         actual_headers = self.page.get_header_list()
