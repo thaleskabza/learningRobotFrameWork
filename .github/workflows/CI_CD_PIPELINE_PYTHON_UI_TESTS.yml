@@ -31,6 +31,7 @@ jobs:
 
       - name: Start Selenium Hub and browser nodes
         run: docker compose up -d
+
         timeout-minutes: 5
 
       - name: Wait for Selenium Hub to be ready
@@ -52,25 +53,14 @@ jobs:
         run: |
           echo "Running Robot Framework tests…"
           mkdir -p "$ROBOT_REPORTS"
-          chmod -R 777 "$ROBOT_REPORTS"
-          docker compose run --rm \
-            -v "${{ github.workspace }}/$ROBOT_REPORTS:/app/robot-reports" \
-            test-runner
+          docker compose run --rm test-runner
         continue-on-error: true
 
       - name: List generated Robot reports
         if: always()
         run: |
-          echo "📂 Contents of reports directory:"
-          ls -R ./robot-reports || echo "No reports found."
-
-      - name: Upload Robot reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: robot-reports
-          path: ./robot-reports/
-          retention-days: 7
+          echo "Contents of reports directory:"
+          ls -R ./app/robot-reports|| echo "No reports found."
 
       - name: Tear down services
         if: always()
