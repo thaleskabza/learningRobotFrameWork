@@ -5,8 +5,12 @@ import time
 import csv
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from pages.web_tables_page import WebTablesPage
 from models.user_data import UserData
+
 
 class WebTablesLibrary:
     """Robot keyword library wrapping WebTablesPage POM."""
@@ -58,7 +62,16 @@ class WebTablesLibrary:
         return headers
 
     def click_add_user(self):
+        """
+        Click the Add User button, waiting for any existing backdrop to clear first.
+        """
         self._ensure_page_initialized()
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.invisibility_of_element_located((By.CLASS_NAME, 'modal-backdrop'))
+            )
+        except Exception:
+            pass
         print("[ACTION] Clicking 'Add User' button.")
         self.page.click_add_user()
 
@@ -79,9 +92,9 @@ class WebTablesLibrary:
         user = UserData(
             first_name=data.get('FirstName', ''),
             last_name=data.get('LastName', ''),
-            username=f"{data.get('userName', '')}_{int(time.time())}",
+            username=f"{data.get('UserName', '')}_{int(time.time())}",
             password=data.get('Password', ''),
-            company=data.get('customer', ''),
+            company=data.get('Customer', ''),
             role=data.get('Role', ''),
             email=data.get('Email', ''),
             mobile_phone=data.get('CellPhone', '')
@@ -103,32 +116,33 @@ class WebTablesLibrary:
         print(f"[STATUS] Is browser open? {status}")
         return status
 
-    def validate_user_list_table(self, expected_headers):
+    def validate_user_list_table(self, *expected_headers):
         """
         Validate that the user list table is displayed and that the headers
-        exactly match the expected_headers list (including 'Action').
+        exactly match the expected_headers sequence.
         """
         self._ensure_page_initialized()
 
+        # normalize expected headers
+        if len(expected_headers) == 1 and isinstance(expected_headers[0], (list, tuple)):
+            expected = list(expected_headers[0])
+        else:
+            expected = list(expected_headers)
+
         # 1) ensure the table is visible
         if not self.page.is_user_list_table_displayed():
-            raise AssertionError("❌ User list table is not displayed.")
+            raise AssertionError(" User list table is not displayed.")
         print("[CHECK] ✅ User list table is visible.")
 
         # 2) fetch the actual headers
         actual_headers = self.page.get_header_list()
         print(f"[DATA] Retrieved headers for validation: {actual_headers}")
 
-        # 3) ensure 'Action' header is present
-        if 'Action' not in actual_headers:
-            raise AssertionError("❌ 'Action' header is missing.")
-        print("[CHECK] ✅ 'Action' header is present.")
-
-        # 4) full-list comparison
-        if list(actual_headers) != list(expected_headers):
+        # 3) full-list comparison
+        if actual_headers != expected:
             raise AssertionError(
                 f"[ASSERT] Header mismatch.\n"
                 f"  Actual:   {actual_headers}\n"
-                f"  Expected: {expected_headers}"
+                f"  Expected: {expected}"
             )
-        print("[ASSERT] ✅ Header list matches expected list.")
+        print("[ASSERT] Header list matches expected list.")

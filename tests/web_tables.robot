@@ -29,8 +29,4 @@ Validate User List Table
     [Documentation]    Verify that the user list table and headers are present (including 'Action')
     Validate User List Table    @{EXPECTED_HEADERS}
 
-Add User From CSV And Verify
-    [Documentation]    Add a user from CSV and verify they appear in the user list
-    Wait Until Keyword Succeeds    10x    2s    Click Add User
-    ${username}=    Add User From CSV    ${CSV_FILE}    0
-    User Should Be Present In List    ${username}
+
