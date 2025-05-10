@@ -16,15 +16,15 @@ class WebTablesPage(BasePage):
     locators = {
         "table": (
             By.CSS_SELECTOR,
-            'table.smart-table.table-striped[table-title="Smart Table example"]'
+            'table.smart-table.table.table-striped'
         ),
         "modal_backdrop": (
             By.CLASS_NAME,
             "modal-backdrop"
         ),
         "add_user": (
-            By.XPATH,
-            "//button[contains(.,' Add User')]"
+            By.CSS_SELECTOR,
+            "button.btn.btn-link.pull-right"
         ),
         "firstName": (By.NAME, "FirstName"),
         "lastName": (By.NAME, "LastName"),
@@ -85,7 +85,7 @@ class WebTablesPage(BasePage):
     def click_add_user(self):
         print("[PAGE] Clicking 'Add User' button.")
         try:
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 2).until(
                 EC.invisibility_of_element_located(self.locators["modal_backdrop"])
             )
             print("[PAGE] Modal backdrop cleared.")
