@@ -37,4 +37,4 @@ USER robot
 
 # 6) Default command: run Robot into the pre-created dirs
 ENTRYPOINT ["robot"]
-CMD ["--outputdir", "/app/robot-reports", "--loglevel", "TRACE", "tests/"]
+CMD ["--outputdir", "robot-reports", "--loglevel", "TRACE", "tests/"]

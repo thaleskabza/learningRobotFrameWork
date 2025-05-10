@@ -16,8 +16,6 @@ ${CSV_FILE}       users.csv
 ...    Role
 ...    E-mail
 ...    Cell Phone
-...    Locked
-...    Action
 
 *** Test Cases ***
 Verify Browser Initialization

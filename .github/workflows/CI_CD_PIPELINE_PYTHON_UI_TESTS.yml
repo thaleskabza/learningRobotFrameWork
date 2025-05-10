@@ -60,14 +60,14 @@ jobs:
         if: always()
         run: |
           echo "📂 Contents of reports directory:"
-          ls -R ./robot-reports|| echo "No reports found."
+          docker compose run --rm robot sh -c 'ls -R ./robot-reports || echo "No reports found."'
 
       - name: Upload Robot reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: robot-reports
-          path: ./robot-reports/
+          path: robot-reports/
           retention-days: 7
 
       - name: Tear down services
